@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import SaveText from "../components/saveText/SaveText";
 import SaveFile from "../components/saveFile/SaveFile";
@@ -10,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
 const Manager = () => {
-  const [statusCheck, setStatusCheck] = useState(false);
+  // const [statusCheck, setStatusCheck] = useState(false);
   const [userData, setUserData] = useState(null);
 
   const logoutHandler = () => {
@@ -30,18 +29,18 @@ const Manager = () => {
     });
   };
 
-  const checkUserSession = async () => {
-    const url = `${AUTH_BASE_URL}/auth/login/success`;
-    await axios
-      .get(url, { withCredentials: true })
-      .then((res) => {
-        setStatusCheck(!statusCheck);
-      })
-      .catch((err) => {
-        logoutToast();
-        logoutHandler();
-      });
-  };
+  // const checkUserSession = async () => {
+  //   const url = `${AUTH_BASE_URL}/auth/login/success`;
+  //   await axios
+  //     .get(url, { withCredentials: true })
+  //     .then((res) => {
+  //       setStatusCheck(!statusCheck);
+  //     })
+  //     .catch((err) => {
+  //       logoutToast();
+  //       logoutHandler();
+  //     });
+  // };
 
   useEffect(() => {
     const getUserData = async () => {
