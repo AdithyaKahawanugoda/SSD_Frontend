@@ -7,6 +7,7 @@ import BarLoader from "react-spinners/BarLoader";
 import { BASE_URL } from "../../constants";
 import { logoutHandler } from "../../services/api";
 import sha256 from "crypto-js/sha256";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 // Import React FilePond
 import { FilePond, registerPlugin } from "react-filepond";
@@ -32,6 +33,32 @@ const SaveFile = () => {
     }
   };
 
+  const uploadToast = (text) => {
+    toast.success(text, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const logoutToast = () => {
+    toast.error("Your Session Expired, Please Login Again", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
   const uploadHandler = async () => {
     setIsLoading(true);
     let fileEncodeDataURL = encodeFile();
@@ -54,9 +81,10 @@ const SaveFile = () => {
         )
         .then((res) => {
           if (res.status === 401) {
+            logoutToast();
             logoutHandler();
           }
-          alert("HASH SAVED");
+          uploadToast("Hash Saved On Database");
           axios
             .post(
               `${BASE_URL}/file/saveFile`,
@@ -67,9 +95,10 @@ const SaveFile = () => {
               config
             )
             .then((res) => {
-              alert(res.data.msg);
+              uploadToast(res.data.msg);
               setIsLoading(false);
               if (res.status === 401) {
+                logoutToast();
                 logoutHandler();
               }
             })
@@ -101,7 +130,7 @@ const SaveFile = () => {
         className="border rounded-2xl"
         imagePreviewMinHeight={350}
       />
-      <div className="save-text-save-btn">
+      <div className="save-file-upload-btn">
         <Button
           variant="contained"
           fullWidth
@@ -113,6 +142,7 @@ const SaveFile = () => {
         </Button>
         {isLoading && <BarLoader color="orange" width={"100%"} />}
       </div>
+      <ToastContainer />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Button from "@mui/material/Button";
-import { teal } from "@mui/material/colors";
+import { teal, red } from "@mui/material/colors";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import BarLoader from "react-spinners/BarLoader";
 import validator from "validator";
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { AUTH_BASE_URL } from "./../../constants";
 import { logoutHandler } from "../../services/api";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { ToastContainer, toast } from "react-toastify";
 
 import axios from "axios";
 
@@ -33,7 +34,8 @@ const Registration = ({ sectionNavigator }) => {
   useEffect(() => {
     const registrationSuccessHandler = () => {
       if (registrationData?.msg) {
-        alert(registrationData.msg);
+        registrationToast(registrationData.msg);
+        setRegistrationData(null);
       }
       setIsLoading(false);
     };
@@ -64,9 +66,35 @@ const Registration = ({ sectionNavigator }) => {
       setAccountType(accType);
     }
   };
+  const registrationToast = (text) => {
+    toast.success(text, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const logoutToast = () => {
+    toast.error("Your Session Expired, Please Login Again", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+    });
+  };
 
   const registrationHandler = async (e) => {
     e.preventDefault();
+
     if (isValid && email.length > 0 && password.length > 5 && accountType) {
       setIsLoading(true);
       const config = {
@@ -92,7 +120,7 @@ const Registration = ({ sectionNavigator }) => {
           setUsername("");
           setPassword("");
           if (res.status === 401) {
-            console.log("999999");
+            logoutToast();
             logoutHandler();
           }
         })
@@ -124,12 +152,12 @@ const Registration = ({ sectionNavigator }) => {
           >
             <FormControlLabel
               value="WORKER"
-              control={<Radio />}
+              control={<Radio style={{ color: "teal" }} />}
               label="Worker"
             />
             <FormControlLabel
               value="MANAGER"
-              control={<Radio />}
+              control={<Radio style={{ color: "teal" }} />}
               label="Manager"
             />
           </RadioGroup>
@@ -256,7 +284,7 @@ const Registration = ({ sectionNavigator }) => {
         <Button
           variant="contained"
           fullWidth
-          style={{ backgroundColor: teal[500] }}
+          style={{ backgroundColor: red[700] }}
           startIcon={<LogoutIcon />}
           onClick={logoutHandler}
         >
@@ -266,6 +294,7 @@ const Registration = ({ sectionNavigator }) => {
       {errorText && (
         <div className="login-component-error-text">{errorText}</div>
       )}
+      <ToastContainer />
     </div>
   );
 };

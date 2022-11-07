@@ -8,11 +8,38 @@ import BarLoader from "react-spinners/BarLoader";
 import { BASE_URL } from "../../constants";
 import { logoutHandler } from "../../services/api";
 import sha256 from "crypto-js/sha256";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 
 const SaveText = () => {
-  const [plainText, setPlainText] = useState(false);
+  const [plainText, setPlainText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const uploadToast = (text) => {
+    toast.success(text, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  const logoutToast = () => {
+    toast.error("Your Session Expired, Please Login Again", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+    });
+  };
 
   const uploadHandler = async () => {
     if (plainText) {
@@ -34,9 +61,10 @@ const SaveText = () => {
         )
         .then((res) => {
           if (res.status === 401) {
+            logoutToast();
             logoutHandler();
           }
-          alert("HASH SAVED");
+          uploadToast("Hash Saved On Database");
           axios
             .post(
               `${BASE_URL}/message/saveMessage`,
@@ -47,10 +75,11 @@ const SaveText = () => {
               config
             )
             .then((res) => {
-              alert(res.data.msg);
+              uploadToast(res.data.msg);
               setPlainText("");
               setIsLoading(false);
               if (res.status === 401) {
+                logoutToast();
                 logoutHandler();
               }
             })
@@ -72,7 +101,7 @@ const SaveText = () => {
         <TextareaAutosize
           aria-label="minimum height"
           minRows={10}
-          placeholder="Message"
+          placeholder="Write Your Message Here.."
           style={{
             width: 700,
             paddingLeft: "5%",
@@ -82,6 +111,7 @@ const SaveText = () => {
           onChange={(e) => {
             setPlainText(e.target.value);
           }}
+          value={plainText}
         />
       </div>
       <div className="save-text-save-btn">
@@ -96,6 +126,7 @@ const SaveText = () => {
         </Button>
         {isLoading && <BarLoader color="orange" width={"100%"} />}
       </div>
+      <ToastContainer />
     </div>
   );
 };
